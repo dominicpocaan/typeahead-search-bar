@@ -1,8 +1,17 @@
 .main {
+  padding: 4rem;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 6rem;
-  min-height: 100vh;
+}
+
+.searchdialog {
+  top: 0;
+  padding: 4px;
+  margin: 10rem;
+  width: 460px;
+  position: fixed;
+  border-radius: 6px;
 }

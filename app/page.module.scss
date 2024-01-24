@@ -1,22 +1,25 @@
 .main {
-  padding: 4rem;
-  min-height: 100vh;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.searchbar {
+  flex: 0 0 100%;
+  max-width: 525px;
+  margin-top: 2vh;
 }
 
 .searchdialog {
   top: 0;
   padding: 4px;
-  margin: 10rem;
+  margin-top: 5vh;
   max-width: 525px;
   position: fixed;
   border-radius: 6px;
 
   .searchresults {
-    max-height: calc(80vh - 10rem);
+    max-height: 80vh;
     overflow-y: scroll;
 
     .episode {

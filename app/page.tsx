@@ -1,15 +1,60 @@
 'use client';
 
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import { Container, Dialog, TextField } from '@radix-ui/themes';
+import {
+  Box,
+  Container,
+  Dialog,
+  Separator,
+  Text,
+  TextField,
+} from '@radix-ui/themes';
+import { debounce } from 'lodash';
+import { CldImage } from 'next-cloudinary';
+import { Fragment, useState } from 'react';
 
+import HighlightedText from '@/components/HighlightedText';
+import useRealmLogin from '@/hooks/useRealmLogin';
 import styles from './page.module.scss';
 
+interface Episode {
+  _id: any;
+  title: string;
+  poster: string;
+  director: string;
+  releaseDate: string;
+}
+
 export default function Home() {
+  const { user } = useRealmLogin();
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState<Episode[]>([]);
+
+  const handleSearch = debounce(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchTerm(event.target.value);
+      try {
+        const results = await user?.functions.searchEpisodes(
+          event.target.value
+        );
+        setSearchResults(results);
+      } catch (error) {}
+    },
+    300
+  );
+
   return (
     <main>
       <Container size="1" className={styles.main}>
-        <Dialog.Root>
+        <Dialog.Root
+          onOpenChange={(open) => {
+            if (!open) {
+              setSearchResults([]);
+              setSearchTerm('');
+            }
+          }}
+        >
           <Dialog.Trigger>
             <TextField.Root>
               <TextField.Slot>
@@ -28,13 +73,54 @@ export default function Home() {
                 <MagnifyingGlassIcon height="16" width="16" />
               </TextField.Slot>
               <TextField.Input
-                onChange={(event) => {
-                  console.log(event.target.value);
-                }}
+                onChange={handleSearch}
                 placeholder="Search Star Wars Episode..."
                 size="3"
               />
             </TextField.Root>
+
+            {searchResults.length > 0 && (
+              <Fragment>
+                <Separator my="3" size="4" />
+
+                <Box className={styles.searchresults}>
+                  {searchResults.map((episode) => (
+                    <Fragment key={episode._id}>
+                      <Box className={styles.episode}>
+                        <Box className={styles.poster}>
+                          <CldImage
+                            width="92"
+                            height="138"
+                            src={episode.poster}
+                            alt={episode.title}
+                          />
+                        </Box>
+
+                        <Box className={styles.details}>
+                          <Text as="div" size="3" weight="bold">
+                            <HighlightedText
+                              text={episode.title}
+                              highlight={searchTerm}
+                            />
+                          </Text>
+                          <Text as="div" size="2">
+                            Director:{' '}
+                            <HighlightedText
+                              text={episode.director}
+                              highlight={searchTerm}
+                            />
+                          </Text>
+                          <Text as="div" size="1" weight="light">
+                            Release Date: {episode.releaseDate}
+                          </Text>
+                        </Box>
+                      </Box>
+                      <Separator mb="3" size="4" />
+                    </Fragment>
+                  ))}
+                </Box>
+              </Fragment>
+            )}
           </Dialog.Content>
         </Dialog.Root>
       </Container>

@@ -11,7 +11,23 @@
   top: 0;
   padding: 4px;
   margin: 10rem;
-  width: 460px;
+  max-width: 525px;
   position: fixed;
   border-radius: 6px;
+
+  .searchresults {
+    max-height: calc(80vh - 10rem);
+    overflow-y: scroll;
+
+    .episode {
+      display: flex;
+      gap: 20px;
+
+      .details {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+    }
+  }
 }
